@@ -6,9 +6,6 @@ import SearchIcon from '@mui/icons-material/Search';
 import SettingsIcon from '@mui/icons-material/Settings';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import AddIcon from '@mui/icons-material/Add';
-// import VisibilityIcon from '@mui/icons-material/Visibility';
-// import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-// import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import BottomNavBar from '../components/BottomNavBar';
 import TaskCard from '../components/AppointmentCard';
 
@@ -57,7 +54,7 @@ const HomePage = () => {
       </Box>
 
 
-      {/* Task Cards */}
+      {/* Appointment Cards */}
       <Box sx={{ px: 2, overflow: 'auto' }}>
         <Stack direction="row" spacing={2} sx={{ mb: 3, mt: 2 }}>
           <TaskCard
