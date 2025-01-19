@@ -4,6 +4,8 @@ import { styled } from "@mui/system";
 import HomePage from './pages/HomePage';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Notes from './pages/Notes';
+import AudioTranscriptionTest from './AudioTranscriptionTest';
+
 
 import {
   Paper
@@ -27,7 +29,7 @@ function App() {
       <Container>
         <Router>
           <Routes>
-            <Route path="/" element={<HomePage />} />
+            <Route path="/" element={<AudioTranscriptionTest />} />
             <Route path="/conversation" element={<Conversation />} />
             <Route path="/notes" element={<Notes />} />
           </Routes>
