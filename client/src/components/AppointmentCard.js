@@ -32,7 +32,7 @@ const ActionButton = styled(Button)({
   },
 });
 
-const AppointmentCard = ({ appointment = {}, bgcolor }) => {
+const AppointmentCard = ({ appointment = {}, bgcolor, onDelete }) => {
     const navigate = useNavigate();
     
     const {
@@ -96,7 +96,7 @@ const AppointmentCard = ({ appointment = {}, bgcolor }) => {
           variant="outlined" 
           size="small"
           startIcon={<DeleteOutlineIcon sx={{ fontSize: 16 }} />}
-          onClick={() => console.log('Delete')}
+          onClick={onDelete}
         >
           Delete
         </ActionButton>
