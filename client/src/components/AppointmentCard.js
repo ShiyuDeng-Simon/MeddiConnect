@@ -47,7 +47,9 @@ const AppointmentCard = ({ appointment = {}, bgcolor, onDelete }) => {
     };
 
     const handleNotesClick = (e) => {
-        navigate('/notes');
+      navigate('/notes', {
+        state: { noteType: 'pre' },
+      });
       };
   
   return (

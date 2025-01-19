@@ -19,7 +19,7 @@ import {
   ConversationTranscriber,
 } from "microsoft-cognitiveservices-speech-sdk";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-
+import { useNavigate } from 'react-router-dom';
 
 const MessagesContainer = styled(Box)({
   flex: 1,
@@ -76,6 +76,7 @@ const Conversation = () => {
   const [isRecording, setIsRecording] = useState(false);
   const transcriberRef = useRef(null);
   const messagesEndRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     let transcriber = null;
@@ -181,6 +182,7 @@ const Conversation = () => {
     if (isRecording) {
       handleRecordingClick();
     }
+    navigate('/notes', { state: { noteType: "post" } });
   };
 
   const getBars = () => {

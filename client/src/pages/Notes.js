@@ -3,6 +3,8 @@ import { styled } from "@mui/system";
 import * as React from 'react';
 import TextArea from "../components/TextArea";
 import Header from "../components/Header";
+import { useLocation } from 'react-router-dom';
+
 
 const Container = styled('div')({
     textAlign: 'left',
@@ -18,8 +20,9 @@ const AppointmentNotes = styled('pre')({
 });
 
 const Notes = () => {
+    const location = useLocation();
 
-    const [noteType, setNoteType] = React.useState("pre");
+    const [noteType, setNoteType] = React.useState(location?.state?.noteType);
     const handleNoteTypeChange = (noteType) => {
         setNoteType(noteType);
     }

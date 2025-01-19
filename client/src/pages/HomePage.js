@@ -133,10 +133,7 @@ const HomePage = (props) => {
 
       {/* Tabs */}
       <Stack direction="row" sx={{ px: 2, mb: 2 }}>
-        <TabButton active>Recently</TabButton>
-        <TabButton>Today</TabButton>
-        <TabButton>Upcoming</TabButton>
-        <TabButton>Later</TabButton>
+        <h2> Upcoming Appointments </h2>
       </Stack>
 
       {/* Task Cards */}
@@ -158,6 +155,10 @@ const HomePage = (props) => {
               />
             </Box>
           ))}
+        </Stack>
+
+        <Stack direction="row" spacing={2} sx={{ mb: 3 }}>
+          <h2> Past Appointments </h2>
         </Stack>
 
         {/* Task List */}
