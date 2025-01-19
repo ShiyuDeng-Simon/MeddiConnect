@@ -4,6 +4,7 @@ import { styled } from "@mui/system";
 import HomePage from './pages/HomePage';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Notes from './pages/Notes';
+import Prescriptions from './pages/Prescriptions';
 
 
 import {
@@ -31,6 +32,7 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/conversation" element={<Conversation />} />
             <Route path="/notes" element={<Notes />} />
+            <Route path="/prescriptions" element={<Prescriptions />} />
           </Routes>
         </Router>
       </Container>

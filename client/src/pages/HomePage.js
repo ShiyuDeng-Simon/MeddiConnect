@@ -10,6 +10,7 @@ import BottomNavBar from '../components/BottomNavBar';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider, DatePicker, TimePicker } from '@mui/x-date-pickers';
 import AppointmentCard from '../components/AppointmentCard';
+import { useNavigate } from 'react-router-dom';
 
 const TabButton = styled(Typography)(({ active }) => ({
   color: active ? '#6B4EFF' : '#9BA3AF',
@@ -112,6 +113,8 @@ const HomePage = (props) => {
     setAppointments(updatedAppointments);
   };
 
+  const navigate = useNavigate();
+
   return (
     <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
       {/* Header */}
@@ -120,7 +123,7 @@ const HomePage = (props) => {
           <MenuIcon />
         </IconButton>
         <Box sx={{ flex: 1, ml: 2 }}>
-          <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Hi, Jasmine</Typography>
+          <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Hi, Simon</Typography>
           <Typography variant="body2" color="text.secondary">Welcome back</Typography>
         </Box>
         <IconButton>
@@ -132,8 +135,43 @@ const HomePage = (props) => {
       </Box>
 
       {/* Tabs */}
-      <Stack direction="row" sx={{ px: 2, mb: 2 }}>
-        <h2> Upcoming Appointments </h2>
+      <Stack 
+        direction="row" 
+        sx={{ 
+          px: 3,
+          py: 2,
+          mb: 3,
+          borderBottom: '2px solid rgba(56, 155, 178, 0.2)',
+          background: 'linear-gradient(to right, rgba(56, 155, 178, 0.1), rgba(43, 58, 103, 0.05))'
+        }}
+      >
+        <Typography 
+          variant="h6" 
+          sx={{
+            fontWeight: 600,
+            color: '#2B3A67',
+            position: 'relative',
+            '&::after': {
+              content: '""',
+              position: 'absolute',
+              bottom: -8,
+              left: 0,
+              width: '240px',
+              height: '3px',
+              backgroundColor: '#389bb2',
+              borderRadius: '2px'
+            },
+            '& span': {
+              color: '#389bb2',
+              fontSize: '0.9em',
+              display: 'block',
+              fontWeight: 400,
+              marginTop: '4px'
+            }
+          }}
+        >
+          Upcoming Appointments
+        </Typography>
       </Stack>
 
       {/* Task Cards */}
@@ -174,7 +212,13 @@ const HomePage = (props) => {
                 bgcolor: 'background.paper',
                 borderRadius: 2,
                 display: 'flex',
-                alignItems: 'center'
+                alignItems: 'center',
+                boxShadow: '0px 3px 10px rgba(0, 0, 0, 0.1)',
+                transition: 'all 0.2s ease-in-out',
+                '&:hover': {
+                  boxShadow: '0px 5px 15px rgba(0, 0, 0, 0.15)',
+                  transform: 'translateY(-2px)'
+                }
               }}
             >
               <Avatar sx={{ bgcolor: '#2B3A67', mr: 2 }}>
@@ -186,6 +230,20 @@ const HomePage = (props) => {
                   {task.date}
                 </Typography>
               </Box>
+              <Button
+                variant="contained"
+                onClick={() => navigate('/notes', { state: { noteType: 'post' }})}
+                sx={{
+                  bgcolor: '#389bb2',
+                  '&:hover': {
+                    bgcolor: '#2d7d8f',
+                  },
+                  borderRadius: '8px',
+                  minWidth: '100px'
+                }}
+              >
+                View
+              </Button>
             </Box>
           ))}
         </Stack>

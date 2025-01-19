@@ -182,7 +182,10 @@ const Conversation = () => {
     if (isRecording) {
       handleRecordingClick();
     }
-    navigate('/notes', { state: { noteType: "post" } });
+    navigate('/notes', {
+        state: { noteType: 'pre', message: messages },
+
+      });;
   };
 
   const getBars = () => {
