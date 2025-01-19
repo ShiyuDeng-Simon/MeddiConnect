@@ -39,12 +39,15 @@ const MessagesContainer = styled(Box)({
   },
 });
 
-const MessageBubble = styled(Box)(({ isUser }) => ({
-  display: "flex",
-  alignItems: "flex-start",
-  marginBottom: "16px",
-  flexDirection: isUser ? "row-reverse" : "row",
-}));
+const MessageBubble = styled(Box)(({ isUser }) => {
+  console.log('MessageBubble isUser state:', isUser);
+  return ({
+    display: "flex",
+    alignItems: "flex-start",
+    marginBottom: "16px",
+    flexDirection: isUser ? "row-reverse" : "row",
+  });
+});
 
 const MessageContent = styled(Paper)(({ isUser }) => ({
   textAlign: "left",
@@ -99,7 +102,7 @@ const Conversation = () => {
             
             setMessages(prevMessages => [...prevMessages, {
               text,
-              isUser: speakerId === "Guest"
+              isUser: speakerId === "Guest-1"
             }]);
           }
         };
@@ -182,16 +185,16 @@ const Conversation = () => {
 
   const getBars = () => {
     return (
-      <div className="bars">
-        <div className="bar"></div>
-        <div className="bar"></div>
-        <div className="bar"></div>
-        <div className="bar"></div>
-        <div className="bar"></div>
-        <div className="bar"></div>
-        <div className="bar"></div>
-        <div className="bar"></div>
-        <div className="bar"></div>
+        <div id="bars">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
       </div>
     );
   };
