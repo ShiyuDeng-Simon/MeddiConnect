@@ -236,7 +236,7 @@ const Conversation = () => {
             fontWeight: 400
           }}
         >
-          Appointment with Dr. Lockhart
+          Appointment with Dr. Smith
         </Typography>
       </Box>
       <MessagesContainer>
