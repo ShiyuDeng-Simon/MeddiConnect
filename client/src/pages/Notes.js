@@ -4,6 +4,8 @@ import TextArea from "../components/TextArea";
 import Header from "../components/Header";
 import { useLocation } from 'react-router-dom';
 import { callLLM } from "../llmServices/localLLM";
+import ReactMarkdown from "react-markdown";
+import { Backdrop, CircularProgress, Typography, Box } from '@mui/material';
 
 const Container = styled('div')({
     textAlign: 'left',
@@ -19,6 +21,12 @@ const AppointmentNotes = styled('div')({
     padding: '50px',
     whiteSpace: 'pre-wrap'
 });
+
+const LoadingBackdrop = styled(Backdrop)(({ theme }) => ({
+  zIndex: 9999,
+  color: '#fff',
+  backgroundColor: 'rgba(0, 0, 0, 0.7)',
+}));
 
 const Notes = () => {
     const location = useLocation();
@@ -51,7 +59,7 @@ const Notes = () => {
     }, []); // Run once when component mounts
 
     function parseConversation(conversation) {
-        const prefix = "Summarize the conversation between a doctor and a patient in a concise, short and accurate way, in point form. Focus more on what the doctor's said. Return response strictly in string and suround medical terms with * in your response: ";
+        const prefix = "Extract the key information from the following conversation between a doctor and a patient. Focus on summarizing the patient's symptoms, diagnosis, recommended tests, prescribed treatments or medications, follow-up instructions, and any other actionable advice or important details. Present the information in a clear, concise, and patient-friendly format.: ";
         const conversationString = conversation.map(obj => 
             `${obj.isUser ? "Patient: " : "Doctor: "}${obj.text}`
         ).join("; ");
@@ -106,6 +114,19 @@ const Notes = () => {
         });
     }
 
+    const mockedSummary1 = "**Conversation Summary:**";
+    const mockedSummary2 = "- Most lab results are within normal ranges. ";
+    const mockedSummary3 = "- Cholesterol levels are slightly elevated; improvement needed through diet and exercise.";
+    const mockedSummary4 = "- Glucose levels, liver, and kidney functions are normal.";
+    const mockedSummary5 = "- Follow-up test scheduled in three months to monitor progress.";
+    const mockedSummary6 = "- Patient encouraged to reach out with questions or concerns.";
+
+
+
+
+
+
+
     return (
         <>
             <Header 
@@ -118,14 +139,33 @@ const Notes = () => {
                     <TextArea/>
                 ) : (
                     <AppointmentNotes>
-                        {isLoading ? (
-                            "Generating notes..."
-                        ) : (
-                            getFormattedText(message || mockNotes)
-                        )}
+                        <ReactMarkdown>{mockedSummary1}</ReactMarkdown>
+                        <br/>
+                        <ReactMarkdown>{mockedSummary2}</ReactMarkdown> 
+                        <ReactMarkdown>{mockedSummary3}</ReactMarkdown>
+                        <ReactMarkdown>{mockedSummary4}</ReactMarkdown> 
+                        <ReactMarkdown>{mockedSummary5}</ReactMarkdown> 
+                        <ReactMarkdown>{mockedSummary6}</ReactMarkdown> 
                     </AppointmentNotes>
                 )}
             </Container>
+
+            {/* Loading Backdrop */}
+            <LoadingBackdrop open={isLoading}>
+                <Box 
+                    sx={{ 
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        alignItems: 'center',
+                        gap: 2 
+                    }}
+                >
+                    <CircularProgress color="inherit" />
+                    <Typography variant="h6" component="div">
+                        Waiting for doctor verification...
+                    </Typography>
+                </Box>
+            </LoadingBackdrop>
         </>
     );
 };
