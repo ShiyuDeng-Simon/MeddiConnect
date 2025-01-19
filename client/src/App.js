@@ -5,7 +5,7 @@ import HomePage from './pages/HomePage';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Notes from './pages/Notes';
 import Prescriptions from './pages/Prescriptions';
-
+import LlmInterface from './pages/llmInterface';
 
 import {
   Paper
@@ -33,6 +33,7 @@ function App() {
             <Route path="/conversation" element={<Conversation />} />
             <Route path="/notes" element={<Notes />} />
             <Route path="/prescriptions" element={<Prescriptions />} />
+            <Route path="/llmInterface" element={<LlmInterface />} />
           </Routes>
         </Router>
       </Container>

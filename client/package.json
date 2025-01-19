@@ -8,6 +8,7 @@
     "@mui/icons-material": "^6.4.0",
     "@mui/material": "^6.4.0",
     "@mui/x-date-pickers": "^5.0.20",
+    "axios": "^1.7.9",
     "cra-template": "1.2.0",
     "date-fns": "^2.29.3",
     "microsoft-cognitiveservices-speech-sdk": "^1.42.0",
