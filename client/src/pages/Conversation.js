@@ -13,6 +13,12 @@ import KeyboardVoiceRoundedIcon from '@mui/icons-material/KeyboardVoiceRounded';
 import PauseIcon from "@mui/icons-material/Pause";
 import Loader from "../components/Loader";
 import Header from "../components/Header";
+import {
+  SpeechConfig,
+  AudioConfig,
+  ConversationTranscriber,
+} from "microsoft-cognitiveservices-speech-sdk";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 
 const MessagesContainer = styled(Box)({
@@ -62,103 +68,79 @@ const InputContainer = styled(Box)({
   borderTop: "1px solid rgba(0, 0, 0, 0.1)",
 });
 
-const dummyMessages = [
-  {
-    text: "Good morning, Mr. Johnson. How are you feeling today?",
-    isUser: false,
-  },
-  {
-    text: "Good morning, Doctor. I'm doing okay, but I'm a little anxious about my test results.",
-    isUser: true,
-  },
-  {
-    id: 3,
-    text: "That's understandable. Let's go over them together. We ran a full panel of tests, and overall, your results look quite good. However, there are a couple of areas we need to address",
-    isUser: false,
-  },
-  {
-    id: 3,
-    text: "Okay, I appreciate the details. What should I be concerned about?",
-    isUser: true,
-  },
-  {
-    id: 4,
-    text: "Your cholesterol levels are slightly elevated. Your LDL cholesterol, often referred to as the 'bad' cholesterol, is 160 mg/dL. Ideally, we want it below 130. This indicates a higher risk for heart disease over time if not managed.",
-    isUser: false,
-  },
-  {
-    id: 3,
-    text: "Oh, I see. Is it something I can improve with diet and exercise?",
-    isUser: true,
-  },
-  {
-    id: 4,
-    text: "Absolutely. I recommend incorporating more fruits, vegetables, whole grains, and lean proteins into your diet while cutting back on saturated fats and processed foods. Regular physical activity, like brisk walking for 30 minutes a day, can also help lower your LDL cholesterol.",
-    isUser: false,
-  },
-  {
-    id: 3,
-    text: "That sounds manageable. Are there other concerns?",
-    isUser: true,
-  },
-  {
-    id: 4,
-    text: "Yes, your fasting blood sugar was slightly elevated at 105 mg/dL. While this isn't in the diabetic range, it suggests prediabetes. It's important to address this now to prevent it from progressing.",
-    isUser: false,
-  },
-  {
-    id: 3,
-    text: "Got it. Are there any medications I need to take for this?",
-    isUser: true,
-  },
-  {
-    id: 4,
-    text: "At this stage, lifestyle changes are the first line of action. If we don't see improvement in three to six months, we can discuss medications. Let's set a follow-up appointment to check your progress",
-    isUser: false,
-  },
-  {
-    id: 3,
-    text: "Okay, that makes sense. Is there anything else I should be aware of?",
-    isUser: true,
-  },
-  {
-    id: 4,
-    text: "One last note—make sure to stay hydrated and prioritize quality sleep, as both can impact your overall health. Do you have any questions or concerns about these recommendations",
-    isUser: false,
-  },
-  {
-    id: 3,
-    text: "No, I think I understand everything. Thank you for explaining it so clearly.",
-    isUser: true,
-  },
-  {
-    id: 4,
-    text: "You're welcome. You're taking a proactive approach to your health, and that's great to see. We'll work together to improve these numbers. Let's schedule that follow-up appointment before you leave.",
-    isUser: false,
-  },
-  {
-    id: 3,
-    text: "Thank you, Doctor. I'll do my best to follow your advice.",
-    isUser: true,
-  },
-  {
-    id: 4,
-    text: "You're welcome. You're taking a proactive approach to your health, and that's great to see. We'll work together to improve these numbers. Let's schedule that follow-up appointment before you leave.",
-    isUser: false,
-  },
-  {
-    id: 3,
-    text: "Thank you, you too.",
-    isUser: true,
-  },
-];
-
 const Conversation = () => {
-  const [messages, setMessages] = useState(dummyMessages);
+  const [messages, setMessages] = useState([]);
   const [isRecording, setIsRecording] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(null);
-
+  const transcriberRef = useRef(null);
   const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    let transcriber = null;
+
+    const initializeTranscriber = async () => {
+      try {
+        const speechConfig = SpeechConfig.fromSubscription(
+          process.env.REACT_APP_AZURE_SPEECH_KEY,
+          process.env.REACT_APP_AZURE_SPEECH_REGION
+        );
+        
+        const audioConfig = AudioConfig.fromDefaultMicrophoneInput();
+        transcriber = new ConversationTranscriber(speechConfig, audioConfig);
+
+        transcriber.transcribed = (s, e) => {
+          if (e.result && e.result.text) {
+            const speakerId = e.result.speakerId || "Unknown Speaker";
+            const text = e.result.text;
+            
+            console.log('Transcription Result:', {
+              speakerId,
+              text
+            });
+            
+            setMessages(prevMessages => [...prevMessages, {
+              text,
+              isUser: speakerId === "Guest"
+            }]);
+          }
+        };
+
+        transcriber.canceled = (s, e) => {
+          console.error("Canceled:", e.reason);
+          setIsRecording(false);
+        };
+
+        transcriber.sessionStopped = (s, e) => {
+          console.log("Session stopped.");
+          setIsRecording(false);
+        };
+
+        transcriberRef.current = transcriber;
+      } catch (error) {
+        console.error("Error initializing transcriber:", error);
+      }
+    };
+
+    initializeTranscriber();
+
+    // Cleanup function
+    return () => {
+      const cleanup = async () => {
+        if (transcriberRef.current) {
+          try {
+            if (isRecording) {
+              await transcriberRef.current.stopTranscribingAsync();
+            }
+            console.log("Cleaning up transcriber");
+            transcriberRef.current = null;
+          } catch (error) {
+            console.error("Error during cleanup:", error);
+          }
+        }
+      };
+      
+      cleanup().catch(console.error);
+    };
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -168,40 +150,87 @@ const Conversation = () => {
     scrollToBottom();
   }, [messages]);
 
+  const handleRecordingClick = async () => {
+    if (!transcriberRef.current) {
+      console.error('Transcriber not initialized');
+      return;
+    }
+
+    try {
+      if (isRecording) {
+        setIsRecording(false);
+        await transcriberRef.current.stopTranscribingAsync();
+        console.log("Transcription stopped");
+      } else {
+        await navigator.mediaDevices.getUserMedia({ audio: true });
+        setMessages([]);
+        await transcriberRef.current.startTranscribingAsync();
+        setIsRecording(true);
+        console.log("Transcription started");
+      }
+    } catch (error) {
+      console.error("Error in transcription:", error);
+      setIsRecording(false);
+    }
+  };
+
+  const handleEndSession = () => {
+    if (isRecording) {
+      handleRecordingClick();
+    }
+  };
+
   const getBars = () => {
     return (
-      <div id="bars">
-        <div class="bar"></div>
-        <div class="bar"></div>
-        <div class="bar"></div>
-        <div class="bar"></div>
-        <div class="bar"></div>
-        <div class="bar"></div>
-        <div class="bar"></div>
-        <div class="bar"></div>
-        <div class="bar"></div>
+      <div className="bars">
+        <div className="bar"></div>
+        <div className="bar"></div>
+        <div className="bar"></div>
+        <div className="bar"></div>
+        <div className="bar"></div>
+        <div className="bar"></div>
+        <div className="bar"></div>
+        <div className="bar"></div>
+        <div className="bar"></div>
       </div>
     );
   };
 
-  const handleRecordingClick= () => {
-    if (isRecording) {
-      setIsRecording(false);
-    } else {
-      setIsRecording(true);
-    }
+  const handleTranslate = () => {
+    // Translation logic here
   };
-  const handleTranslate = () => {};
 
   return (
     <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column', bgcolor: '#f8f9fa' }}>
-      <Header 
-        title={"Appointment with Dr. Lockhart"}
+      <Box
         sx={{ 
           boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
-          bgcolor: '#fff',
+          bgcolor: '#389bb2',
+          height: '64px',
+          display: 'flex',
+          alignItems: 'center',
+          padding: '12px',
+          position: 'relative'
         }} 
-      />
+      >
+        <IconButton 
+          sx={{ color: '#fff', position: 'absolute', left: 8 }}
+          onClick={() => window.history.back()}
+        >
+          <ArrowBackIcon />
+        </IconButton>
+        <Typography 
+          variant="h6" 
+          sx={{ 
+            color: '#fff',
+            width: '100%',
+            textAlign: 'center',
+            fontWeight: 400
+          }}
+        >
+          Appointment with Dr. Lockhart
+        </Typography>
+      </Box>
       <MessagesContainer>
         {messages.map((message, index) => (
           <MessageBubble
@@ -210,8 +239,7 @@ const Conversation = () => {
           >
             {!message.isUser && (
               <Avatar
-                src={`https://${message.avatar}`}
-                alt={"Dr."}
+                alt="Dr."
                 sx={{
                   width: 40,
                   height: 40,
@@ -224,18 +252,10 @@ const Conversation = () => {
                 Dr
               </Avatar>
             )}
-            <MessageContent
-              isUser={message.isUser}
-              className={activeIndex === index ? "selected" : ""}
-              onClick={() => setActiveIndex(index)}
-            >
+            <MessageContent isUser={message.isUser}>
               <Typography variant="body1" component="div">
                 {message.text}
               </Typography>
-              <Typography
-                variant="caption"
-                sx={{ opacity: 0.7, mt: 0.5, display: "block" }}
-              ></Typography>
             </MessageContent>
             {!message.isUser && (
               <IconButton
@@ -300,6 +320,7 @@ const Conversation = () => {
             {isRecording && getBars()}
           </Stack>
           <IconButton
+            onClick={handleEndSession}
             sx={{
               backgroundColor: "#f7f7f7",
               color: "#2B3A67",
